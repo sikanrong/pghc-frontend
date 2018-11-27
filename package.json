@@ -1,5 +1,5 @@
 {
-  "name": "pg_hash_chain_frontend",
+  "name": "pghc-frontend",
   "version": "0.0.0",
 
   "dependencies": {
