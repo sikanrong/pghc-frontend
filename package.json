@@ -1,0 +1,48 @@
+{
+  "name": "pg_hash_chain_frontend",
+  "version": "0.0.0",
+
+  "dependencies": {
+    "@angular/common": "4.0.2",
+    "@angular/compiler": "4.0.2",
+    "@angular/core": "4.0.2",
+    "@angular/forms": "4.0.2",
+    "@angular/http": "4.0.2",
+    "@angular/platform-browser": "4.0.2",
+    "@angular/platform-browser-dynamic": "4.0.2",
+    "@angular/router": "4.0.2",
+    "@angular/upgrade": "4.0.2",
+    "rxjs": "latest",
+    "zone.js": "latest",
+    "reflect-metadata": "0.1.8",
+    "blueimp-md5": "2.4.0",
+    "rxjs-compat":"^6.3.3"
+  },
+
+  "devDependencies": {
+    "csv-parse": "1.1.7",
+    "webpack": "4.6.0",
+
+    "@babel/register": "^7.0.0",
+    "@babel/core": "^7.1.6",
+    "@babel/preset-typescript":"^7.1.0",
+    "@babel/preset-env":"^7.1.6",
+    "@babel/preset-react":"^7.0.0",
+
+    "source-map-loader":"^0.2.4",
+    "babel-loader": "^8.0.4",
+    "sass-loader": "^7.0.1",
+    "file-loader": "^1.1.11",
+    "style-loader": "^0.21.0",
+    "css-loader": "^0.28.11",
+    "ts-loader": "^5.3.1",
+
+    "express": "^4.16.4",
+    "typescript": "^3.1.6",
+    "node-sass": "^4.9.0",
+    "webpack-bundle-analyzer": "^2.11.1",
+    "gulp": "3.9.1",
+    "chalk": "^2.4.1",
+    "chalk-log": "^1.2.0"
+  }
+}

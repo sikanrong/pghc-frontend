@@ -1,0 +1,14 @@
+{
+  "presets": [
+    "@babel/react",
+    "@babel/typescript",
+    [
+      "env",
+      {
+        "targets": {
+          "node": "current"
+        }
+      }
+    ]
+  ]
+}
