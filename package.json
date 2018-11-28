@@ -12,6 +12,10 @@
     "@angular/platform-browser-dynamic": "4.0.2",
     "@angular/router": "4.0.2",
     "@angular/upgrade": "4.0.2",
+
+    "@ngrx/core": "^1.2.0",
+    "@ngrx/store":"^6.1.2",
+
     "rxjs": "latest",
     "zone.js": "latest",
     "reflect-metadata": "0.1.8",
@@ -42,7 +46,9 @@
     "webpack-bundle-analyzer": "^2.11.1",
     "gulp": "3.9.1",
     "chalk": "^2.4.1",
-    "chalk-log": "^1.2.0"
+    "chalk-log": "^1.2.0",
+    "tslint": "^5.11.0",
+    "typescript": "^3.1.6"
   },
   "webpack": {
     "entrypoints": {
