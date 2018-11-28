@@ -5,6 +5,7 @@
     "trailing-comma": false,
     "eofline": false,
     "ordered-imports": false,
-    "quotemark": false
+    "quotemark": false,
+    "interface-name":false
   }
 }
