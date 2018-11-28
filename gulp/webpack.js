@@ -1,3 +1,4 @@
+var $package = require('../package');
 var webpack = require('webpack');
 var path = require('path');
 var console = require('chalk-log');
@@ -6,13 +7,13 @@ var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlug
 var dist_path = path.resolve(__dirname, '../app/dist');
 
 var vendor_deps = Object.keys(require('../package.json').dependencies);
-var workerEntrypoints = {
-    //Example workers
-    // map_geometry_worker: path.resolve(__dirname, '../app/scripts/modules/gl_map/services/map_geometry.worker.js'),
-    // map_texture_worker: path.resolve(__dirname, '../app/scripts/modules/gl_map/services/map_texture.worker.js')
-};
 
-var appEntrypoint = path.resolve(__dirname, '../app/scripts/main.js');
+var appEntrypoint = path.resolve(__dirname, '..', $package.webpack.entrypoints.app);
+
+var workerEntrypoints = Object.assign({}, $package.webpack.entrypoints.workers);
+Object.keys(workerEntrypoints).forEach(_k => {
+    workerEntrypoints[_k] = path.join(__dirname, '..', workerEntrypoints[_k]);
+});
 
 var _doPack = function(conf, watch){
 
@@ -137,20 +138,26 @@ export function bundleApp(watch, analyze){
         }));
 
 
-    // workerConf = {};
-    // Object.assign(workerConf, appConf);
-    // workerConf.entry = workerEntrypoints;
-    // workerConf.plugins = [
-    //     new webpack.SourceMapDevToolPlugin({
-    //         filename: '[name].js.map'
-    //     })
-    // ]
+    let bundleConfigs = [appConf];
 
-    // if(analyze)
-    //     workerConf.plugins.push(new BundleAnalyzerPlugin({
-    //         analyzerMode: watch? 'server' : 'static',
-    //         analyzerPort: 8889
-    //     }));
+    if(Object.keys(workerEntrypoints).length > 0){
+        workerConf = {};
+        Object.assign(workerConf, appConf);
+        workerConf.entry = workerEntrypoints;
+        workerConf.plugins = [
+            new webpack.SourceMapDevToolPlugin({
+                filename: '[name].js.map'
+            })
+        ]
 
-    return _doPack(appConf, watch);
+        if(analyze)
+            workerConf.plugins.push(new BundleAnalyzerPlugin({
+                analyzerMode: watch? 'server' : 'static',
+                analyzerPort: 8889
+            }));
+
+        bundleConfigs.push(workerConf);
+    }
+
+    return _doPack(bundleConfigs, watch);
 };

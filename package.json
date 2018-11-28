@@ -43,5 +43,11 @@
     "gulp": "3.9.1",
     "chalk": "^2.4.1",
     "chalk-log": "^1.2.0"
+  },
+  "webpack": {
+    "entrypoints": {
+      "app": "app/scripts/main.js",
+      "workers": {}
+    }
   }
 }
