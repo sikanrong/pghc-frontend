@@ -1,12 +1,14 @@
 {
+  "plugins": [
+    ["@babel/plugin-proposal-decorators", {"legacy": true}]
+  ],
   "presets": [
-    "@babel/react",
-    "@babel/typescript",
+    "@babel/preset-typescript",
     [
-      "env",
+      "@babel/preset-env",
       {
         "targets": {
-          "node": "current"
+          "node": true
         }
       }
     ]

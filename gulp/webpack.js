@@ -86,14 +86,11 @@ export function bundleApp(watch, analyze){
             filename: '[name].js',
             publicPath: '/'
         },
+        resolve: {
+            extensions: ['.wasm', '.mjs', '.js', '.json', '.ts']
+        },
         module: {
             rules: [
-
-                {
-                    test: /\.tsx?$/,
-                    loader: 'ts-loader',
-                },
-
                 {
                     test: /\.s[ca]ss$/,
                     use: [
@@ -108,14 +105,17 @@ export function bundleApp(watch, analyze){
                     test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)(\?.*$|$)/,
                     loader: 'file-loader'
                 },
-
-
+                {
+                    test: /\.tsx?$/,
+                    exclude: /node_modules/,
+                    loader: 'babel-loader',
+                },
                 {
                     test: /\.js$/,
                     exclude: /node_modules/,
                     use: ["source-map-loader"],
                     enforce: "pre"
-                }
+                },
 
             ]
         },

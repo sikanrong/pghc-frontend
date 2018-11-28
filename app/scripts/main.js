@@ -1,3 +1,7 @@
+require("@babel/register")({
+    extensions: [".js", ".ts"]
+});
+
 import 'zone.js';
 import 'reflect-metadata';
 

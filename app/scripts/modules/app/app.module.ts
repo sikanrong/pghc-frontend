@@ -3,12 +3,17 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouterModule } from "@angular/router";
-// @ts-ignore
-import { AppComponent } from "./app.component.ts";
+
+import { AppComponent } from "./app.component";
+import {LiveStatusModule} from "../livestatus/index";
+import AppRoutes from "./routes";
 
 @NgModule({
     imports: [
-        BrowserModule
+        BrowserModule,
+        RouterModule,
+        LiveStatusModule,
+        AppRoutes
     ],
 
     declarations: [ AppComponent ],
