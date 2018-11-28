@@ -1,7 +1,7 @@
-import { RouterModule } from "@angular/router"
+import { RouterModule } from "@angular/router";
 import {LiveStatusComponent} from "../livestatus";
 
 
 export default RouterModule.forRoot([
-    { path: '', component: LiveStatusComponent }
+    { path: '', pathMatch: 'full', redirectTo: 'livestatus' }
 ]);

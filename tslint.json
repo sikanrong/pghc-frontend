@@ -4,6 +4,7 @@
     "object-literal-sort-keys": false,
     "trailing-comma": false,
     "eofline": false,
-    "ordered-imports": false
+    "ordered-imports": false,
+    "quotemark": false
   }
 }
