@@ -4,14 +4,16 @@ import {LiveStatusSingleNodeComponent} from "./components/livestatus.singlenode.
 import {LiveStatusClusterComponent} from "./components/livestatus.cluster.component";
 import {RouterModule} from "@angular/router";
 import LiveStatusRoutes from "./routes";
+import {CommonModule} from "@angular/common";
 import {StoreModule} from "@ngrx/store";
-import {ClusterReducer} from "./store/livestatus.reducers";
+import {reducers} from "./state/livestatus.reducers";
 
 @NgModule({
     imports: [
         RouterModule,
-        LiveStatusRoutes,
-        StoreModule.forRoot({cluster: ClusterReducer})
+        StoreModule.forRoot(reducers),
+        CommonModule,
+        LiveStatusRoutes
     ],
     declarations: [ LiveStatusComponent, LiveStatusSingleNodeComponent, LiveStatusClusterComponent ],
     exports: [ RouterModule ]

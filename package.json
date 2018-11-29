@@ -54,5 +54,9 @@
       "app": "app/scripts/main.js",
       "workers": {}
     }
+  },
+
+  "config": {
+    "api_uri": "http://minikube.ingress/api"
   }
 }

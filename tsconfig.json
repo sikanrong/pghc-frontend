@@ -5,6 +5,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
-    "lib": ["es6", "dom"]
+    "lib": ["es6", "dom"],
+    "resolveJsonModule": true
   }
 }

@@ -1,9 +1,7 @@
+import {ClusterConfig} from "./livestatus.models";
+
 export interface LiveStatusState {
-    cluster: {
-        backendNodes: number,
-        pgSlaveNodes: number,
-        pgMasterNodes: number
-    };
+    cluster: ClusterConfig;
 }
 
 export const initializeState = (): LiveStatusState => {
