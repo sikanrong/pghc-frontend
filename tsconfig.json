@@ -4,6 +4,7 @@
     "paths": { "*": ["types/*"] },
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "sourceMap": true,
     "lib": ["es6", "dom"]
   }
 }

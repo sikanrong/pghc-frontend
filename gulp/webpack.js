@@ -109,7 +109,7 @@ export function bundleApp(watch, analyze){
                 {
                     test: /\.tsx?$/,
                     exclude: /node_modules/,
-                    loader: 'babel-loader',
+                    loader: 'ts-loader',
                 },
                 {
                     test: /\.js$/,
