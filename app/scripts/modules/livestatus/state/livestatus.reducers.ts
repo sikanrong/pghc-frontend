@@ -1,6 +1,6 @@
-import {LiveStatusState, initializeState} from "./livestatus.state";
-import {GET_CLUSTER_CONF, LiveStatusActionsUnion} from "./livestatus.actions";
-import {ClusterConfig} from "./livestatus.models";
+import {LiveStatusState, initializeState, LiveStatusStats} from "./livestatus.state";
+import {GET_CLUSTER_CONF, LiveStatusActionsUnion, NEW_CHAIN_LINK} from "./livestatus.actions";
+import {ChainLink, ClusterConfig} from "./livestatus.models";
 import {ActionReducerMap} from "@ngrx/store";
 const initialState = initializeState();
 
@@ -17,6 +17,22 @@ export function ClusterConfigReducer(
     return newState;
 }
 
+export function LiveStatsReducer(
+    state: LiveStatusStats = initialState.stats,
+    action: LiveStatusActionsUnion
+): LiveStatusStats {
+    let newState: LiveStatusStats;
+
+    switch (action.type) {
+        case NEW_CHAIN_LINK:
+            newState = Object.assign({}, state);
+            newState.totalLinksCreated++;
+            break;
+    }
+    return newState;
+}
+
 export const reducers: ActionReducerMap<LiveStatusState> = {
-    cluster: ClusterConfigReducer
+    cluster: ClusterConfigReducer,
+    stats: LiveStatsReducer
 };

@@ -8,6 +8,8 @@
     "quotemark": false,
     "interface-name":false,
     "no-consecutive-blank-lines": false,
-    "max-line-length": false
+    "max-line-length": false,
+    "max-classes-per-file": false,
+    "no-console": false
   }
 }

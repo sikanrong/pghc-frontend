@@ -7,6 +7,7 @@ import LiveStatusRoutes from "./routes";
 import {CommonModule} from "@angular/common";
 import {StoreModule} from "@ngrx/store";
 import {reducers} from "./state/livestatus.reducers";
+import {LiveStatusOrchestrator} from "./services/livestatus.orchestrator";
 
 @NgModule({
     imports: [
@@ -16,7 +17,9 @@ import {reducers} from "./state/livestatus.reducers";
         LiveStatusRoutes
     ],
     declarations: [ LiveStatusComponent, LiveStatusSingleNodeComponent, LiveStatusClusterComponent ],
-    exports: [ RouterModule ]
+    exports: [ RouterModule ],
+    providers: [ LiveStatusOrchestrator ]
+
 })
 export class LiveStatusModule {}
 export {LiveStatusComponent, LiveStatusSingleNodeComponent, LiveStatusClusterComponent};

@@ -1,7 +1,6 @@
 {
   "name": "pghc-frontend",
   "version": "0.0.0",
-
   "dependencies": {
     "@angular/common": "4.0.2",
     "@angular/compiler": "4.0.2",
@@ -12,34 +11,28 @@
     "@angular/platform-browser-dynamic": "4.0.2",
     "@angular/router": "4.0.2",
     "@angular/upgrade": "4.0.2",
-
     "@ngrx/core": "^1.2.0",
-    "@ngrx/store":"^6.1.2",
-
+    "@ngrx/store": "^6.1.2",
     "rxjs": "latest",
     "zone.js": "latest",
     "reflect-metadata": "0.1.8",
     "blueimp-md5": "2.4.0",
-    "rxjs-compat":"^6.3.3",
+    "rxjs-compat": "^6.3.3",
     "d3": "^5.7.0"
   },
-
   "devDependencies": {
     "csv-parse": "1.1.7",
     "webpack": "4.6.0",
-
     "@babel/register": "^7.0.0",
     "@babel/core": "^7.1.6",
-    "@babel/preset-env":"^7.1.6",
-
-    "source-map-loader":"^0.2.4",
+    "@babel/preset-env": "^7.1.6",
+    "source-map-loader": "^0.2.4",
     "babel-loader": "^8.0.4",
     "sass-loader": "^7.0.1",
     "file-loader": "^1.1.11",
     "style-loader": "^0.21.0",
     "css-loader": "^0.28.11",
     "ts-loader": "^5.3.1",
-
     "express": "^4.16.4",
     "node-sass": "^4.9.0",
     "webpack-bundle-analyzer": "^2.11.1",
@@ -52,11 +45,14 @@
   "webpack": {
     "entrypoints": {
       "app": "app/scripts/main.js",
-      "workers": {}
+      "workers": {
+        "creator": "app/scripts/modules/livestatus/services/livestatus.creator.worker.ts"
+      }
     }
   },
-
   "config": {
-    "api_uri": "http://minikube.ingress/api"
+    "api_uri": "http://minikube.ingress/api",
+    "num_creators": 2,
+    "num_verifiers": 1
   }
 }

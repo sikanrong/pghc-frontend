@@ -1,7 +1,8 @@
 <h1>LIVESTATUS OVERVIEW</h1>
-Backend Servers: {{clusterConf.backendNodes}}
-PostgreSQL Masters: {{clusterConf.pgMasterNodes}}
-PostgreSQL Slaves: {{clusterConf.pgSlaveNodes}}
+Backend Servers: {{clusterConf.backendNodes}}<br/>
+PostgreSQL Masters: {{clusterConf.pgMasterNodes}}<br/>
+PostgreSQL Slaves: {{clusterConf.pgSlaveNodes}}<br/>
+Total Links Added: {{requestStats.totalLinksCreated}}
 <br/><br/>
 SUB-VIEW PANE:<br/>
 <router-outlet name="ls"></router-outlet>
