@@ -1,7 +1,6 @@
 import {Injectable} from "@angular/core";
-import {Observable, fromEvent} from "rxjs";
+import {Observable, fromEvent, merge} from "rxjs";
 import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/merge';
 import { CreatorMessage } from "./livestatus.creator.worker";
 import * as $package from "../../../../../package.json";
 import {VerifierMessage} from "./livestatus.verifier.worker";
@@ -42,21 +41,24 @@ export class LiveStatusOrchestrator {
     }
 
     public spawnAllWorkers(): Observable<LiveStatusMessage> {
-        let obs$ = new Observable<LiveStatusMessage>();
+        const allObs: Observable<LiveStatusMessage>[] = [];
         for (let i = 0; i < NUM_CREATORS; i++) {
-            obs$ = obs$.merge(this.spawnCreator());
+            allObs.push(this.spawnCreator());
         }
 
         for (let i = 0; i < NUM_VERIFIERS; i++) {
-            obs$ = obs$.merge(this.spawnVerifier());
+            allObs.push(this.spawnVerifier());
         }
 
-        return obs$;
+        return merge(...allObs);
     }
 
     public cleanup(): void {
-        this.workers.forEach((worker) => {
+        this.workers.forEach((worker, index) => {
             worker.terminate();
+            delete this.workers[index];
         });
+
+        this.workers = [];
     }
 }

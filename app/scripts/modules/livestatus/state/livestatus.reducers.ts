@@ -1,10 +1,11 @@
-import {initializeState, LiveStatusState, LiveStatusStats} from "./livestatus.state";
+import {initializeState, LiveStatusState, LiveStatusStats, UserInputs} from "./livestatus.state";
 import {
+    ClusterConfigActionsUnion,
     GET_CLUSTER_CONF,
     LiveStatusActionsUnion,
     NEW_CHAIN_LINK,
     NEW_VERIFICATION,
-    NewVerification
+    NewVerification, UI_PAUSE, UI_UNPAUSE, UserActionsUnion
 } from "./livestatus.actions";
 import {ClusterConfig} from "./livestatus.models";
 import {ActionReducerMap} from "@ngrx/store";
@@ -14,15 +15,17 @@ const initialState = initializeState();
 
 export function ClusterConfigReducer(
     state: ClusterConfig = initialState.cluster,
-    action: LiveStatusActionsUnion
+    action: ClusterConfigActionsUnion
 ): ClusterConfig {
     let newState: ClusterConfig;
     switch (action.type) {
         case GET_CLUSTER_CONF:
             newState = Object.assign({}, state, action.payload);
+            return newState;
             break;
     }
-    return newState;
+
+    return state;
 }
 
 export function LiveStatsReducer(
@@ -35,6 +38,7 @@ export function LiveStatsReducer(
         case NEW_CHAIN_LINK:
             newState = Object.assign({}, state);
             newState.totalLinksCreated++;
+            return newState;
             break;
 
         case NEW_VERIFICATION:
@@ -49,12 +53,33 @@ export function LiveStatsReducer(
                     newState.totalFailedVerifications++;
                     break;
             }
+            return newState;
             break;
     }
-    return newState;
+    return state;
+}
+
+export function UserInputReducer(
+    state: UserInputs = initialState.userInputs,
+    action: UserActionsUnion
+): UserInputs {
+    const newState: UserInputs = Object.assign({}, state);
+    switch (action.type) {
+        case UI_PAUSE:
+            newState.isPaused = true;
+            return newState;
+            break;
+        case UI_UNPAUSE:
+            newState.isPaused = false;
+            return newState;
+            break;
+    }
+
+    return state;
 }
 
 export const reducers: ActionReducerMap<LiveStatusState> = {
     cluster: ClusterConfigReducer,
-    stats: LiveStatsReducer
+    stats: LiveStatsReducer,
+    userInputs: UserInputReducer
 };

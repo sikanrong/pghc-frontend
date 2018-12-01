@@ -5,7 +5,7 @@ PostgreSQL Slaves: {{clusterConf.pgSlaveNodes}}<br/>
 Total Links Added: {{requestStats.totalLinksCreated}}<br/>
 Total Successful Verifications: {{requestStats.totalSuccessfulVerifications}}<br/>
 Total Failed Verifications: {{requestStats.totalFailedVerifications}}<br/>
-<button (click)="pauseStressTest()" mat-button="pause">Pause</button>
+<button (click)="requestPause()" mat-button="pause">Pause</button>
 <br/><br/>
 SUB-VIEW PANE:<br/>
 <router-outlet name="ls"></router-outlet>

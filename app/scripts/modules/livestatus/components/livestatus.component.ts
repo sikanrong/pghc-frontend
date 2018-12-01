@@ -1,12 +1,18 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import * as $package from "../../../../../package.json";
-import {select, Store} from "@ngrx/store";
-import {LiveStatusState, LiveStatusStats, initializeState} from "../state/livestatus.state";
+import {Action, select, Store} from "@ngrx/store";
+import {LiveStatusState, LiveStatusStats, initializeState, UserInputs} from "../state/livestatus.state";
 import ActionWithPayload from "../../../ActionWithPayload";
 import {ChainLink, ClusterConfig} from "../state/livestatus.models";
-import {GetClusterConf, NewChainLink, NewVerification} from "../state/livestatus.actions";
+import {
+    GetClusterConf,
+    NewChainLink,
+    NewVerification,
+    PauseSimulation,
+    UnPauseSimulation
+} from "../state/livestatus.actions";
 import {Observable, Subscription} from "rxjs";
-import {map} from "rxjs/operators";
+import {map, distinctUntilChanged} from "rxjs/operators";
 import {LiveStatusMessage, LiveStatusMessageType, LiveStatusOrchestrator} from "../services/livestatus.orchestrator";
 import {CreatorMessage} from "../services/livestatus.creator.worker";
 import {VerifierMessage} from "../services/livestatus.verifier.worker";
@@ -18,13 +24,21 @@ import {VerifierMessage} from "../services/livestatus.verifier.worker";
 export class LiveStatusComponent implements OnInit, OnDestroy {
     public clusterConf: object = {};
 
-    private ClusterConfState$: Observable<LiveStatusState>;
-    private LiveStatsState$: Observable<LiveStatusState>;
+    private ClusterConfState$: Observable<ClusterConfig>;
     private ClusterConfSubscription: Subscription;
 
     private LiveStatusUpdates$: Observable<LiveStatusMessage>;
     private LiveStatusSubscription: Subscription;
-    private requestStats: LiveStatusStats = initializeState().stats;
+
+    private LiveStatsState$: Observable<LiveStatusStats>;
+    private LiveStatsSubscription: Subscription;
+
+    private UserInputState$: Observable<UserInputs>;
+    private UserInputSubscription: Subscription;
+
+    private initState: LiveStatusState = initializeState();
+    private requestStats: LiveStatusStats = this.initState.stats;
+    private userInputs: UserInputs = this.initState.userInputs;
 
     constructor(private store: Store<LiveStatusState>, private orchestrator: LiveStatusOrchestrator) {}
 
@@ -32,15 +46,24 @@ export class LiveStatusComponent implements OnInit, OnDestroy {
         this.orchestrator.cleanup();
         this.LiveStatusSubscription.unsubscribe();
         this.ClusterConfSubscription.unsubscribe();
+        this.LiveStatsSubscription.unsubscribe();
+        this.UserInputSubscription.unsubscribe();
     }
 
-    public pauseStressTest() {
-        this.orchestrator.cleanup();
+    public requestPause() {
+        if (this.userInputs.isPaused) {
+            const uiUnPause: Action = new UnPauseSimulation();
+            this.store.dispatch(uiUnPause);
+        } else {
+            const uiPause: Action = new PauseSimulation();
+            this.store.dispatch(uiPause);
+        }
     }
 
     public async ngOnInit() {
-        this.ClusterConfState$ = this.store.pipe(select('cluster'));
-        this.LiveStatsState$ = this.store.pipe(select('stats'));
+        this.ClusterConfState$ = this.store.pipe(select('cluster')).pipe(distinctUntilChanged());
+        this.LiveStatsState$ = this.store.pipe(select('stats')).pipe(distinctUntilChanged());
+        this.UserInputState$ = this.store.pipe(select('userInputs')).pipe(distinctUntilChanged());
         // Fetch the cluster config from the API
         const apiConf = await fetch(`${$package.config.api_uri}/cluster/config`, {method: "GET"})
             .then((resp) => {
@@ -60,22 +83,31 @@ export class LiveStatusComponent implements OnInit, OnDestroy {
 
         this.store.dispatch(getClusterConf);
 
-        this.LiveStatusUpdates$ = this.orchestrator.spawnAllWorkers();
-        this.LiveStatusSubscription = this.LiveStatusUpdates$.subscribe((lsm: LiveStatusMessage) => {
-            switch (lsm.parentType) {
-                case LiveStatusMessageType.creator:
-                    const newChainLink: ActionWithPayload<ChainLink> = new NewChainLink((lsm as CreatorMessage).payload);
-                    this.store.dispatch(newChainLink);
-                    break;
-                case LiveStatusMessageType.verifier:
-                    const newVerification: ActionWithPayload<VerifierMessage> = new NewVerification(lsm as VerifierMessage);
-                    this.store.dispatch(newVerification);
-                    break;
-            }
-        });
-
-        this.LiveStatsState$.subscribe((newStats) => {
+        this.LiveStatsSubscription = this.LiveStatsState$.pipe(map((newStats) => {
             Object.assign(this.requestStats, newStats);
-        });
+        })).subscribe();
+
+        this.UserInputSubscription = this.UserInputState$.pipe(map((newInputs) => {
+            Object.assign(this.userInputs, newInputs);
+
+            if (newInputs.isPaused) {
+                this.orchestrator.cleanup();
+                this.LiveStatusSubscription.unsubscribe();
+            } else {
+                this.LiveStatusUpdates$ = this.orchestrator.spawnAllWorkers();
+                this.LiveStatusSubscription = this.LiveStatusUpdates$.subscribe((lsm: LiveStatusMessage) => {
+                    switch (lsm.parentType) {
+                        case LiveStatusMessageType.creator:
+                            const newChainLink: ActionWithPayload<ChainLink> = new NewChainLink((lsm as CreatorMessage).payload);
+                            this.store.dispatch(newChainLink);
+                            break;
+                        case LiveStatusMessageType.verifier:
+                            const newVerification: ActionWithPayload<VerifierMessage> = new NewVerification(lsm as VerifierMessage);
+                            this.store.dispatch(newVerification);
+                            break;
+                    }
+                });
+            }
+        })).subscribe();
     }
 }

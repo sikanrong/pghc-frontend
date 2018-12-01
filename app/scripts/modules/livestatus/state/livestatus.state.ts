@@ -10,10 +10,18 @@ export interface LiveStatusStats {
 export interface LiveStatusState {
     cluster: ClusterConfig;
     stats: LiveStatusStats;
+    userInputs: UserInputs;
+}
+
+export interface UserInputs {
+    isPaused: boolean;
 }
 
 export const initializeState = (): LiveStatusState => {
     return({
+        userInputs: {
+            isPaused: false
+        },
         stats: {
             totalLinksCreated: 0,
             totalVerifications: 0,
