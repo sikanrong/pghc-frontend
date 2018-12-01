@@ -2,6 +2,9 @@ import {ClusterConfig, ChainLink} from "./livestatus.models";
 
 export interface LiveStatusStats {
     totalLinksCreated: number;
+    totalVerifications: number;
+    totalSuccessfulVerifications: number;
+    totalFailedVerifications: number;
 }
 
 export interface LiveStatusState {
@@ -12,7 +15,10 @@ export interface LiveStatusState {
 export const initializeState = (): LiveStatusState => {
     return({
         stats: {
-            totalLinksCreated: 0
+            totalLinksCreated: 0,
+            totalVerifications: 0,
+            totalSuccessfulVerifications: 0,
+            totalFailedVerifications: 0
         },
         cluster: {
             backendNodes: 0,

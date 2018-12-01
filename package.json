@@ -18,7 +18,8 @@
     "reflect-metadata": "0.1.8",
     "blueimp-md5": "2.4.0",
     "rxjs-compat": "^6.3.3",
-    "d3": "^5.7.0"
+    "d3": "^5.7.0",
+    "md5": "^2.2.1"
   },
   "devDependencies": {
     "csv-parse": "1.1.7",
@@ -46,7 +47,8 @@
     "entrypoints": {
       "app": "app/scripts/main.js",
       "workers": {
-        "creator": "app/scripts/modules/livestatus/services/livestatus.creator.worker.ts"
+        "creator": "app/scripts/modules/livestatus/services/livestatus.creator.worker.ts",
+        "verifier": "app/scripts/modules/livestatus/services/livestatus.verifier.worker.ts"
       }
     }
   },

@@ -1,8 +1,10 @@
 import ActionWithPayload from "../../../ActionWithPayload";
 import {ClusterConfig, ChainLink} from "./livestatus.models";
+import {VerifierMessage} from "../services/livestatus.verifier.worker";
 
 export const GET_CLUSTER_CONF = "[app] GET_CLUSTER_CONF";
 export const NEW_CHAIN_LINK = "[app] NEW_CHAIN_LINK";
+export const NEW_VERIFICATION = "[app] NEW_VERIFICATION";
 
 export class GetClusterConf implements ActionWithPayload<ClusterConfig> {
     public payload: ClusterConfig;
@@ -14,7 +16,7 @@ export class GetClusterConf implements ActionWithPayload<ClusterConfig> {
     }
 }
 
-export class NewChainLink implements ActionWithPayload<ChainLink>{
+export class NewChainLink implements ActionWithPayload<ChainLink> {
     public payload: ChainLink;
     public readonly type: string;
 
@@ -24,4 +26,14 @@ export class NewChainLink implements ActionWithPayload<ChainLink>{
     }
 }
 
-export type LiveStatusActionsUnion = GetClusterConf | NewChainLink;
+export class NewVerification implements ActionWithPayload<VerifierMessage> {
+    public payload: VerifierMessage;
+    public readonly type: string;
+
+    constructor(msg: VerifierMessage) {
+        this.payload = msg;
+        this.type = NEW_VERIFICATION;
+    }
+}
+
+export type LiveStatusActionsUnion = GetClusterConf | NewChainLink | NewVerification;

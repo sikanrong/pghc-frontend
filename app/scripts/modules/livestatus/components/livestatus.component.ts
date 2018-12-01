@@ -1,13 +1,15 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import * as $package from "../../../../../package.json";
-import {Store, select} from "@ngrx/store";
-import {LiveStatusState, initializeState, LiveStatusStats} from "../state/livestatus.state";
+import {select, Store} from "@ngrx/store";
+import {LiveStatusState, LiveStatusStats, initializeState} from "../state/livestatus.state";
 import ActionWithPayload from "../../../ActionWithPayload";
 import {ChainLink, ClusterConfig} from "../state/livestatus.models";
-import {GetClusterConf, NewChainLink} from "../state/livestatus.actions";
+import {GetClusterConf, NewChainLink, NewVerification} from "../state/livestatus.actions";
 import {Observable, Subscription} from "rxjs";
 import {map} from "rxjs/operators";
-import {LiveStatusMessage, LiveStatusOrchestrator} from "../services/livestatus.orchestrator";
+import {LiveStatusMessage, LiveStatusMessageType, LiveStatusOrchestrator} from "../services/livestatus.orchestrator";
+import {CreatorMessage} from "../services/livestatus.creator.worker";
+import {VerifierMessage} from "../services/livestatus.verifier.worker";
 
 @Component({
     selector: "livestatus",
@@ -22,7 +24,7 @@ export class LiveStatusComponent implements OnInit, OnDestroy {
 
     private LiveStatusUpdates$: Observable<LiveStatusMessage>;
     private LiveStatusSubscription: Subscription;
-    private requestStats: LiveStatusStats = {totalLinksCreated: 0};
+    private requestStats: LiveStatusStats = initializeState().stats;
 
     constructor(private store: Store<LiveStatusState>, private orchestrator: LiveStatusOrchestrator) {}
 
@@ -56,8 +58,16 @@ export class LiveStatusComponent implements OnInit, OnDestroy {
 
         this.LiveStatusUpdates$ = this.orchestrator.spawnAllWorkers();
         this.LiveStatusSubscription = this.LiveStatusUpdates$.subscribe((lsm: LiveStatusMessage) => {
-            const newChainLink: ActionWithPayload<ChainLink> = new NewChainLink(lsm.payload);
-            this.store.dispatch(newChainLink);
+            switch (lsm.parentType) {
+                case LiveStatusMessageType.creator:
+                    const newChainLink: ActionWithPayload<ChainLink> = new NewChainLink((lsm as CreatorMessage).payload);
+                    this.store.dispatch(newChainLink);
+                    break;
+                case LiveStatusMessageType.verifier:
+                    const newVerification: ActionWithPayload<VerifierMessage> = new NewVerification(lsm as VerifierMessage);
+                    this.store.dispatch(newVerification);
+                    break;
+            }
         });
 
         this.LiveStatsState$.subscribe((newStats) => {

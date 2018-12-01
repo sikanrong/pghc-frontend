@@ -17,4 +17,19 @@ export class LiveStatusApi {
             } );
         return link;
     }
+
+    public async getRecent(): Promise<ChainLink[]> {
+        const links: ChainLink[] = await fetch(`${this.apiBase}/chain/recent`, {method: 'GET'})
+            .then( (resp) => resp.json())
+            .then((apiData) => {
+                return apiData.map((apiChainLink) => {
+                    return {
+                        zkId: apiChainLink.zk_id,
+                        nodeId: apiChainLink.node_id,
+                        hash: apiChainLink.hash
+                    } as ChainLink;
+                });
+            } );
+        return links;
+    }
 }

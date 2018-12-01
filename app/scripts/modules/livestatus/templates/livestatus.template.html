@@ -2,7 +2,9 @@
 Backend Servers: {{clusterConf.backendNodes}}<br/>
 PostgreSQL Masters: {{clusterConf.pgMasterNodes}}<br/>
 PostgreSQL Slaves: {{clusterConf.pgSlaveNodes}}<br/>
-Total Links Added: {{requestStats.totalLinksCreated}}
+Total Links Added: {{requestStats.totalLinksCreated}}<br/>
+Total Successful Verifications: {{requestStats.totalSuccessfulVerifications}}<br/>
+Total Failed Verifications: {{requestStats.totalFailedVerifications}}<br/>
 <br/><br/>
 SUB-VIEW PANE:<br/>
 <router-outlet name="ls"></router-outlet>
