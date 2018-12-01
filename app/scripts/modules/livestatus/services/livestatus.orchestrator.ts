@@ -28,6 +28,7 @@ export class LiveStatusOrchestrator {
     public spawnCreator(): Observable<CreatorMessage> {
         const creator: Worker = new Worker('/dist/creator.js');
         this.workers.push(creator);
+        creator.postMessage("start");
         return fromEvent(creator, 'message')
             .map((event: MessageEvent) => event.data);
     }
@@ -35,6 +36,7 @@ export class LiveStatusOrchestrator {
     public spawnVerifier(): Observable<VerifierMessage> {
         const verifier: Worker = new Worker('/dist/verifier.js');
         this.workers.push(verifier);
+        verifier.postMessage("start");
         return fromEvent(verifier, 'message')
             .map((event: MessageEvent) => event.data);
     }

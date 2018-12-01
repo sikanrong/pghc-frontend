@@ -73,4 +73,10 @@ const verifyRecentChain = async (): Promise<void> => {
     setTimeout(verifyRecentChain.bind(this), 100);
 };
 
-verifyRecentChain();
+if (self) {
+    self.addEventListener('message', (m) => {
+        if (m.data === "start") {
+            verifyRecentChain();
+        }
+    });
+}

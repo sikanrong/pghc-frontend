@@ -34,6 +34,10 @@ export class LiveStatusComponent implements OnInit, OnDestroy {
         this.ClusterConfSubscription.unsubscribe();
     }
 
+    public pauseStressTest() {
+        this.orchestrator.cleanup();
+    }
+
     public async ngOnInit() {
         this.ClusterConfState$ = this.store.pipe(select('cluster'));
         this.LiveStatsState$ = this.store.pipe(select('stats'));

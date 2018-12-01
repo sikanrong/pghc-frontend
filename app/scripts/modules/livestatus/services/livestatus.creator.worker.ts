@@ -37,4 +37,10 @@ const addLink = async () => {
         });
 };
 
-addLink();
+if (self) {
+    self.addEventListener('message', (m) => {
+        if (m.data === "start") {
+            addLink();
+        }
+    });
+}

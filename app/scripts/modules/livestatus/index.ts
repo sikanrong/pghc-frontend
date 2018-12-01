@@ -8,13 +8,15 @@ import {CommonModule} from "@angular/common";
 import {StoreModule} from "@ngrx/store";
 import {reducers} from "./state/livestatus.reducers";
 import {LiveStatusOrchestrator} from "./services/livestatus.orchestrator";
+import {MatButtonModule} from '@angular/material/button';
 
 @NgModule({
     imports: [
         RouterModule,
         StoreModule.forRoot(reducers),
         CommonModule,
-        LiveStatusRoutes
+        LiveStatusRoutes,
+        MatButtonModule
     ],
     declarations: [ LiveStatusComponent, LiveStatusSingleNodeComponent, LiveStatusClusterComponent ],
     exports: [ RouterModule ],
