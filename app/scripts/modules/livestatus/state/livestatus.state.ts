@@ -1,20 +1,9 @@
-import {ClusterConfig, ChainLink} from "./livestatus.models";
-
-export interface LiveStatusStats {
-    totalLinksCreated: number;
-    totalVerifications: number;
-    totalSuccessfulVerifications: number;
-    totalFailedVerifications: number;
-}
+import {ClusterConfig, LiveStatusStats, UserInputs} from "./livestatus.models";
 
 export interface LiveStatusState {
     cluster: ClusterConfig;
     stats: LiveStatusStats;
     userInputs: UserInputs;
-}
-
-export interface UserInputs {
-    isPaused: boolean;
 }
 
 export const initializeState = (): LiveStatusState => {

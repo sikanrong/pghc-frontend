@@ -1,7 +1,8 @@
 import {Component, ElementRef, OnDestroy, OnInit} from "@angular/core";
 import * as $package from "../../../../../package.json";
 import {Action, select, Store} from "@ngrx/store";
-import {LiveStatusState, LiveStatusStats, initializeState, UserInputs} from "../state/livestatus.state";
+import {LiveStatusState, initializeState} from "../state/livestatus.state";
+import {UserInputs, LiveStatusStats} from "../state/livestatus.models";
 import ActionWithPayload from "../../../ActionWithPayload";
 import {ChainLink, ClusterConfig} from "../state/livestatus.models";
 import {
@@ -49,6 +50,7 @@ export class LiveStatusComponent implements OnInit, OnDestroy {
     ) {}
 
     public ngOnDestroy() {
+        this.viz.cleanup();
         this.orchestrator.cleanup();
         this.LiveStatusSubscription.unsubscribe();
         this.ClusterConfSubscription.unsubscribe();
@@ -67,6 +69,7 @@ export class LiveStatusComponent implements OnInit, OnDestroy {
     }
 
     public async ngOnInit() {
+        this.viz.init(this.elRef.nativeElement);
         this.ClusterConfState$ = this.store.pipe(select('cluster')).pipe(distinctUntilChanged());
         this.LiveStatsState$ = this.store.pipe(select('stats')).pipe(distinctUntilChanged());
         this.UserInputState$ = this.store.pipe(select('userInputs')).pipe(distinctUntilChanged());
@@ -88,7 +91,6 @@ export class LiveStatusComponent implements OnInit, OnDestroy {
             .pipe(last())
             .pipe(map((newClusterConf) => {
                 Object.assign(this.clusterConf, newClusterConf);
-                this.viz.drawClusterNodes(this.elRef.nativeElement, this.clusterConf);
         })).subscribe();
 
         this.store.dispatch(getClusterConf);

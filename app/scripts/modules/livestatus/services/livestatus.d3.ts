@@ -2,6 +2,10 @@ import * as d3 from "d3";
 import {Injectable} from "@angular/core";
 import {ClusterConfig} from "../state/livestatus.models";
 import {BaseType, DefaultLinkObject} from "d3";
+import {select, Selector, Store} from "@ngrx/store";
+import {LiveStatusState} from "../state/livestatus.state";
+import {distinctUntilChanged, last, map, take} from "rxjs/operators";
+import {Observable, Subscription} from "rxjs";
 
 interface MasterNodeData extends ClusterNodeData {
     replicas: SlaveNodeData[];
@@ -33,10 +37,33 @@ export class LiveStatusD3 {
     private static messageRadius: number = 5;
     private static verticalSeparation: number = 100;
 
-    public drawClusterNodes(parentNode: HTMLElement, clusterConf: ClusterConfig): void {
-        const svgEl = d3.select(parentNode)
+    private ClusterConfState$: Observable<ClusterConfig>;
+    private clusterConfSubscription: Subscription;
+    private parentNode: HTMLElement;
+    private svgEl: d3.Selection<SVGSVGElement, { }, null, undefined>;
+
+    constructor(private store: Store<LiveStatusState>) { }
+
+    public cleanup(): void {
+        this.clusterConfSubscription.unsubscribe();
+    }
+
+    public init(parentNode: HTMLElement) {
+        this.ClusterConfState$ = this.store.pipe(select('cluster')).pipe(distinctUntilChanged());
+        this.parentNode = parentNode;
+        this.svgEl = d3.select(parentNode)
             .append("svg")
             .attr('id', "cluster-vis");
+
+        this.clusterConfSubscription = this.ClusterConfState$
+            .pipe(take(2))
+            .pipe(last())
+            .pipe(map((newClusterConf) => {
+                this.drawClusterNodes(newClusterConf);
+            })).subscribe();
+    }
+
+    private drawClusterNodes(clusterConf: ClusterConfig): void {
 
         // construct meaningful arrays from the clusterConf data for d3
         const clusterData: MasterNodeData[] = [];
@@ -85,7 +112,7 @@ export class LiveStatusD3 {
 
         const doDraw = () => {
             // First set all of the positioning data based on current view dimensions
-            const parentDims = {x: parentNode.offsetWidth, y: parentNode.offsetHeight};
+            const parentDims = {x: this.parentNode.offsetWidth, y: this.parentNode.offsetHeight};
             const clusterWidth = (parentDims.x / clusterConf.pgMasterNodes);
             const slavesPerMaster = Math.floor(clusterConf.pgSlaveNodes / clusterConf.pgMasterNodes);
             const groupXWidthPerSlave = (clusterWidth / slavesPerMaster);
@@ -125,7 +152,7 @@ export class LiveStatusD3 {
                 });
             });
 
-            const cluster = svgEl.selectAll<SVGGElement, BaseType>("g")
+            const cluster = this.svgEl.selectAll<SVGGElement, BaseType>("g")
                 .data(clusterData);
 
             const clusterGroup = cluster.enter()

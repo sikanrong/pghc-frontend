@@ -9,3 +9,14 @@ export class ChainLink {
     public nodeId: string;
     public hash: string;
 }
+
+export interface UserInputs {
+    isPaused: boolean;
+}
+
+export interface LiveStatusStats {
+    totalLinksCreated: number;
+    totalVerifications: number;
+    totalSuccessfulVerifications: number;
+    totalFailedVerifications: number;
+}

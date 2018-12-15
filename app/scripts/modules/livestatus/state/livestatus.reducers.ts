@@ -1,4 +1,5 @@
-import {initializeState, LiveStatusState, LiveStatusStats, UserInputs} from "./livestatus.state";
+import {initializeState, LiveStatusState} from "./livestatus.state";
+import {LiveStatusStats, UserInputs} from "./livestatus.models";
 import {
     ClusterConfigActionsUnion,
     GET_CLUSTER_CONF,
