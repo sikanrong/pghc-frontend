@@ -105,30 +105,43 @@ export class LiveStatusD3 {
             .attr("cy", (d: MasterNodeData) => d.cy )
             .attr("class", "masterNode");
 
-        const slaveNode = clusterGroup.selectAll("circle.slaveNode")
-            .data((d) => d.replicas);
+        [
+            {
+                className: 'slaveNode',
+                dataKey: 'replicas'
+            },
 
-        slaveNode.enter()
-            .append('circle')
-            .attr('r', LiveStatusD3.nodeRadius)
-            .attr('id', (d: ClusterNodeData) => d.podName)
-            .attr('fill', 'black')
-            .attr('cx', (d: ClusterNodeData) => d.cx)
-            .attr('cy', (d: ClusterNodeData) => d.cy)
-            .attr('class', 'slaveNode');
+            {
+                className: 'backendNode',
+                dataKey: 'backendServers'
+            }
+        ].forEach((sNodeDef) => {
+            const slaveNode = clusterGroup.selectAll(`circle.${sNodeDef.className}`)
+                .data((d) => d[sNodeDef.dataKey]);
 
-        const linkFactory = d3.linkVertical();
-        clusterGroup.selectAll("path.link")
-            .data((d) => {
-                return d.replicas.map((r: SlaveNodeData) => r.link);
-            })
-            .enter()
-            .append('path')
-            .attr('class', 'link')
-            .attr('fill', 'none')
-            .attr('stroke', 'black')
-            .attr('d', (d: DefaultLinkObject) => {
-                return linkFactory(d);
-            });
+            slaveNode.enter()
+                .append('circle')
+                .attr('r', LiveStatusD3.nodeRadius)
+                .attr('id', (d: ClusterNodeData) => d.podName)
+                .attr('fill', 'black')
+                .attr('cx', (d: ClusterNodeData) => d.cx)
+                .attr('cy', (d: ClusterNodeData) => d.cy)
+                .attr('class', sNodeDef.className);
+
+            const linkFactory = d3.linkVertical();
+            clusterGroup.selectAll(`path.link.${sNodeDef.className}`)
+                .data((d) => {
+                    return d[sNodeDef.dataKey].map((r) => r.link);
+                })
+                .enter()
+                .append('path')
+                .attr('class', `${sNodeDef.className} link`)
+                .attr('fill', 'none')
+                .attr('stroke', 'black')
+                .attr('d', (d: DefaultLinkObject) => {
+                    return linkFactory(d);
+                });
+        });
+
     }
 }
