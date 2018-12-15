@@ -1,13 +1,19 @@
-import {ClusterConfig, LiveStatusStats, UserInputs} from "./livestatus.models";
+import {ClusterConfig, LiveStatusStats, UserInputs, CurrentServerResponses} from "./livestatus.models";
 
 export interface LiveStatusState {
     cluster: ClusterConfig;
     stats: LiveStatusStats;
     userInputs: UserInputs;
+    current: CurrentServerResponses;
 }
 
 export const initializeState = (): LiveStatusState => {
     return({
+        current: {
+          newestChain: null,
+          verificationData: [],
+          verified: null
+        },
         userInputs: {
             isPaused: false
         },

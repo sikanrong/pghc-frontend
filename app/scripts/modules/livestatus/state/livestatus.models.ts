@@ -20,3 +20,9 @@ export interface LiveStatusStats {
     totalSuccessfulVerifications: number;
     totalFailedVerifications: number;
 }
+
+export interface CurrentServerResponses {
+    newestChain: ChainLink;
+    verificationData: ChainLink[];
+    verified: boolean;
+}

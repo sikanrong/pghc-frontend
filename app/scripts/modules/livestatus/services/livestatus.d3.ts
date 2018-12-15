@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import {Injectable} from "@angular/core";
-import {ClusterConfig} from "../state/livestatus.models";
+import {ClusterConfig, CurrentServerResponses} from "../state/livestatus.models";
 import {BaseType, DefaultLinkObject} from "d3";
 import {select, Selector, Store} from "@ngrx/store";
 import {LiveStatusState} from "../state/livestatus.state";
@@ -37,19 +37,26 @@ export class LiveStatusD3 {
     private static messageRadius: number = 5;
     private static verticalSeparation: number = 100;
 
+    // ngrx streams and subscriptions...
     private ClusterConfState$: Observable<ClusterConfig>;
     private clusterConfSubscription: Subscription;
+
+    private LatestResponse$: Observable<CurrentServerResponses>;
+    private latestResponsesSubscription: Subscription;
+
     private parentNode: HTMLElement;
     private svgEl: d3.Selection<SVGSVGElement, { }, null, undefined>;
 
     constructor(private store: Store<LiveStatusState>) { }
 
     public cleanup(): void {
+        this.latestResponsesSubscription.unsubscribe();
         this.clusterConfSubscription.unsubscribe();
     }
 
     public init(parentNode: HTMLElement) {
         this.ClusterConfState$ = this.store.pipe(select('cluster')).pipe(distinctUntilChanged());
+        this.LatestResponse$ = this.store.pipe(select('current')).pipe(distinctUntilChanged());
         this.parentNode = parentNode;
         this.svgEl = d3.select(parentNode)
             .append("svg")
@@ -61,6 +68,10 @@ export class LiveStatusD3 {
             .pipe(map((newClusterConf) => {
                 this.drawClusterNodes(newClusterConf);
             })).subscribe();
+
+        this.LatestResponse$.pipe(map((newResponses: CurrentServerResponses) => {
+            // console.log(newResponses);
+        })).subscribe();
     }
 
     private drawClusterNodes(clusterConf: ClusterConfig): void {

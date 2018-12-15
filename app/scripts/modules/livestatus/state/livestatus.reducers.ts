@@ -1,11 +1,11 @@
 import {initializeState, LiveStatusState} from "./livestatus.state";
-import {LiveStatusStats, UserInputs} from "./livestatus.models";
+import {CurrentServerResponses, LiveStatusStats, UserInputs} from "./livestatus.models";
 import {
     ClusterConfigActionsUnion,
     GET_CLUSTER_CONF,
     LiveStatusActionsUnion,
     NEW_CHAIN_LINK,
-    NEW_VERIFICATION,
+    NEW_VERIFICATION, NewChainLink,
     NewVerification, UI_PAUSE, UI_UNPAUSE, UserActionsUnion
 } from "./livestatus.actions";
 import {ClusterConfig} from "./livestatus.models";
@@ -79,8 +79,27 @@ export function UserInputReducer(
     return state;
 }
 
+export function CurrentReducer(
+    state: CurrentServerResponses = initialState.current,
+    action: LiveStatusActionsUnion
+): CurrentServerResponses {
+    const newState = Object.assign({}, state);
+    switch (action.type) {
+        case NEW_CHAIN_LINK:
+            newState.newestChain = (action as NewChainLink).payload;
+            break;
+
+        case NEW_VERIFICATION:
+            newState.verificationData = (action as NewVerification).payload.payload;
+            newState.verified = ((action as NewVerification).payload.type === VerifierMessageType.success);
+            break;
+    }
+    return newState;
+}
+
 export const reducers: ActionReducerMap<LiveStatusState> = {
     cluster: ClusterConfigReducer,
     stats: LiveStatsReducer,
-    userInputs: UserInputReducer
+    userInputs: UserInputReducer,
+    current: CurrentReducer
 };
