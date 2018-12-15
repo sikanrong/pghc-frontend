@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, ElementRef, OnDestroy, OnInit} from "@angular/core";
 import * as $package from "../../../../../package.json";
 import {Action, select, Store} from "@ngrx/store";
 import {LiveStatusState, LiveStatusStats, initializeState, UserInputs} from "../state/livestatus.state";
@@ -12,17 +12,18 @@ import {
     UnPauseSimulation
 } from "../state/livestatus.actions";
 import {Observable, Subscription} from "rxjs";
-import {map, distinctUntilChanged} from "rxjs/operators";
+import {map, distinctUntilChanged, take, last} from "rxjs/operators";
 import {LiveStatusMessage, LiveStatusMessageType, LiveStatusOrchestrator} from "../services/livestatus.orchestrator";
 import {CreatorMessage} from "../services/livestatus.creator.worker";
 import {VerifierMessage} from "../services/livestatus.verifier.worker";
+import {LiveStatusD3} from "../services/livestatus.d3";
 
 @Component({
     selector: "livestatus",
     templateUrl: "/scripts/modules/livestatus/templates/livestatus.template.html"
 })
 export class LiveStatusComponent implements OnInit, OnDestroy {
-    public clusterConf: object = {};
+    public clusterConf: ClusterConfig = new ClusterConfig();
 
     private ClusterConfState$: Observable<ClusterConfig>;
     private ClusterConfSubscription: Subscription;
@@ -40,7 +41,12 @@ export class LiveStatusComponent implements OnInit, OnDestroy {
     private requestStats: LiveStatusStats = this.initState.stats;
     private userInputs: UserInputs = this.initState.userInputs;
 
-    constructor(private store: Store<LiveStatusState>, private orchestrator: LiveStatusOrchestrator) {}
+    constructor(
+        private store: Store<LiveStatusState>,
+        private orchestrator: LiveStatusOrchestrator,
+        private viz: LiveStatusD3,
+        private elRef: ElementRef
+    ) {}
 
     public ngOnDestroy() {
         this.orchestrator.cleanup();
@@ -77,8 +83,12 @@ export class LiveStatusComponent implements OnInit, OnDestroy {
             pgMasterNodes: apiConf.num_bdr_groups
         });
 
-        this.ClusterConfSubscription = this.ClusterConfState$.pipe(map((newClusterConf) => {
-            Object.assign(this.clusterConf, newClusterConf);
+        this.ClusterConfSubscription = this.ClusterConfState$
+            .pipe(take(2))
+            .pipe(last())
+            .pipe(map((newClusterConf) => {
+                Object.assign(this.clusterConf, newClusterConf);
+                this.viz.drawClusterNodes(this.elRef.nativeElement, this.clusterConf);
         })).subscribe();
 
         this.store.dispatch(getClusterConf);

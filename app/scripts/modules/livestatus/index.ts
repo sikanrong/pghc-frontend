@@ -9,6 +9,7 @@ import {StoreModule} from "@ngrx/store";
 import {reducers} from "./state/livestatus.reducers";
 import {LiveStatusOrchestrator} from "./services/livestatus.orchestrator";
 import {MatButtonModule} from '@angular/material/button';
+import {LiveStatusD3} from "./services/livestatus.d3";
 
 @NgModule({
     imports: [
@@ -20,7 +21,7 @@ import {MatButtonModule} from '@angular/material/button';
     ],
     declarations: [ LiveStatusComponent, LiveStatusSingleNodeComponent, LiveStatusClusterComponent ],
     exports: [ RouterModule ],
-    providers: [ LiveStatusOrchestrator ]
+    providers: [ LiveStatusOrchestrator, LiveStatusD3 ]
 
 })
 export class LiveStatusModule {}
