@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import {Injectable} from "@angular/core";
 import {ClusterConfig} from "../state/livestatus.models";
-import {DefaultLinkObject} from "d3";
+import {BaseType, DefaultLinkObject} from "d3";
 
 interface MasterNodeData extends ClusterNodeData {
     replicas: SlaveNodeData[];
@@ -125,11 +125,13 @@ export class LiveStatusD3 {
                 });
             });
 
-            const clusterGroup = svgEl.selectAll("g")
-                .data(clusterData)
-                .enter()
-                .append("g")
-                .attr("transform", (d: MasterNodeData) => `translate(${d.gx}, ${d.gy})`);
+            const cluster = svgEl.selectAll<SVGGElement, BaseType>("g")
+                .data(clusterData);
+
+            const clusterGroup = cluster.enter()
+                    .append("g")
+                .merge(cluster)
+                    .attr("transform", (d: MasterNodeData) => `translate(${d.gx}, ${d.gy})`);
 
             const sNodeDefs = [
                 {
@@ -145,22 +147,24 @@ export class LiveStatusD3 {
 
             sNodeDefs.forEach((sNodeDef) => {
                 const linkFactory = d3.linkVertical();
-                clusterGroup.selectAll(`path.link.${sNodeDef.className}`)
+                const links = clusterGroup.selectAll<SVGPathElement, DefaultLinkObject>(`path.link.${sNodeDef.className}`)
                     .data((d) => {
                         return d[sNodeDef.dataKey].map((r) => r.link || r.links ).flat();
-                    })
-                    .enter()
+                    });
+
+                links.enter()
                     .append('path')
                     .attr('class', `${sNodeDef.className} link`)
                     .attr('fill', 'none')
                     .attr('stroke', 'black')
+                .merge(links)
                     .attr('d', (d: DefaultLinkObject) => {
                         return linkFactory(d);
                     });
             });
 
             sNodeDefs.forEach((sNodeDef) => {
-                const slaveNode = clusterGroup.selectAll(`circle.${sNodeDef.className}`)
+                const slaveNode = clusterGroup.selectAll<SVGCircleElement, SlaveNodeData>(`circle.${sNodeDef.className}`)
                     .data((d) => d[sNodeDef.dataKey]);
 
                 slaveNode.enter()
@@ -169,19 +173,26 @@ export class LiveStatusD3 {
                     .attr('id', (d: ClusterNodeData) => d.podName)
                     .attr('stroke', 'black')
                     .attr('fill', 'white')
+                    .attr('class', sNodeDef.className)
+                .merge(slaveNode)
                     .attr('cx', (d: ClusterNodeData) => d.cx)
-                    .attr('cy', (d: ClusterNodeData) => d.cy)
-                    .attr('class', sNodeDef.className);
+                    .attr('cy', (d: ClusterNodeData) => d.cy);
             });
 
-            clusterGroup.append("circle")
+            const masterNode = clusterGroup.selectAll<SVGCircleElement, MasterNodeData>(`circle.masterNode`)
+                .data((d: MasterNodeData) => [d]);
+
+            masterNode.enter()
+                .append("circle")
                 .attr('r', LiveStatusD3.nodeRadius)
-                .attr('id', (d: ClusterNodeData) => d.podName)
+                .attr('id', (d: MasterNodeData) => d.podName )
                 .attr('stroke', 'black')
                 .attr('fill', 'white')
+                .attr("class", "masterNode")
+            .merge(masterNode)
                 .attr("cx", (d: MasterNodeData) => d.cx )
-                .attr("cy", (d: MasterNodeData) => d.cy )
-                .attr("class", "masterNode");
+                .attr("cy", (d: MasterNodeData) => d.cy );
+
         };
 
         doDraw();
